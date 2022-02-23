@@ -506,12 +506,40 @@ void session_info()
 	{
 		if (fmt == SESSION_INFO_FORMAT_VER)
 		{
+			const char* board_type;
+			if (si.fpga_type == 0x2E49564D && si.board_id == BOARD_ID_CORE) 
+				board_type = "HWFLY CORE";
+			else if (si.fpga_type == 0x2E49564D && si.board_id == BOARD_ID_LITE) 
+				board_type = "HWFLY OLED";
+			else if (si.board_id == BOARD_ID_CORE) 
+				board_type = "SX-CORE";
+			else if (si.board_id == BOARD_ID_LITE) 
+				board_type = "SX-LITE";
+			else 
+				board_type = "Unknown";
+
+			const char* device_type;
+			if (si.device_type == DEVICE_TYPE_ERISTA)
+				device_type = "Erista";
+			else if (si.device_type == DEVICE_TYPE_MARIKO)
+				device_type = "Mariko";
+			else if (si.fpga_type == 0x2E49564D && si.board_id == BOARD_ID_LITE && si.device_type == DEVICE_TYPE_LITE)
+				device_type = "OLED";
+			else if (si.device_type == DEVICE_TYPE_LITE)
+				device_type = "Lite";
+			else
+				device_type = "Unknown";
+				
 			gfx_printf("--- Info for last glitch session ---\n\n");
+			gfx_printf("%kBoard ID:%k %s\n", 0xFFC0C0C0, 0xFF808080, board_type);
+			gfx_printf("%kDevice type:%k %s\n", 0xFFC0C0C0, 0xFF808080, device_type);
+			gfx_printf("\n");
 			gfx_printf("%kAttempts used:%k %d\n", 0xFFC0C0C0, 0xFF808080, si.glitch_attempt);
+			gfx_printf("\n");
 			gfx_printf("%kGlitch params:\n", 0xFFC0C0C0);
 			gfx_printf("%k Offset:%k %d\n", 0xFFC0C0C0, 0xFF808080, si.glitch_cfg.offset);
 			gfx_printf("%k Width:%k %d\n", 0xFFC0C0C0, 0xFF808080, si.glitch_cfg.width);
-			gfx_printf("%k RNG:%k %d\n", 0xFFC0C0C0, 0xFF808080, si.glitch_cfg.rng);
+			gfx_printf("%k Sub-cycle:%k %d\n", 0xFFC0C0C0, 0xFF808080, si.glitch_cfg.subcycle_delay);
 			gfx_printf("\n");
 			gfx_printf("%kTiming:\n", 0xFFC0C0C0);
 			gfx_printf("%k Power goal reached:%k %dus\n", 0xFFC0C0C0, 0xFF808080, si.power_threshold_reached_us);

@@ -337,8 +337,6 @@ static void hwfly_enable_deep_sleep()
 {
 	sdio_req_t *mreq = (sdio_req_t *)MMC_BUFFER;
 	mreq->cmd = FW_DEEP_SLEEP;
-
-	sdio_resp_t *mresp = (sdio_resp_t *)MMC_BUFFER;
 	hwfly_xfer_start(2);
 }
 

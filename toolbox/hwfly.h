@@ -19,8 +19,8 @@
 
 #include <utils/types.h>
 
-#define CONFIG_MAGIC 0x01584E53
-#define SESSION_INFO_FORMAT_VER 1
+#define CONFIG_MAGIC 0x01584E54
+#define SESSION_INFO_FORMAT_VER 2
 #define SESSION_INFO_MAGIC 0x80B54D
 
 typedef struct
@@ -40,10 +40,26 @@ typedef struct
 
 typedef struct
 {
-	uint32_t width;
-	uint32_t offset;
-	uint32_t rng;
+	uint16_t offset; // 12-bit counter marking number of eMMC clock cycles to wait after completed sector 0x13 READ_SINGLE_BLOCK command
+	uint8_t subcycle_delay; // 3-bit counter for number of additional pulses at 4x eMMC clock to delay after 'offset' above
+	uint8_t width; // glitch pulse width in clock cycles @ 48MHz starting after subcycle_delay.
+	uint8_t timeout; // delay as ~1.2ms*timeout value after which glitch_flag:timeout is set when no eMMC bus activity is detected
 } glitch_cfg_t;
+
+enum DEVICE_TYPE
+{
+	DEVICE_TYPE_UNKNOWN = 0,
+	DEVICE_TYPE_ERISTA,
+	DEVICE_TYPE_MARIKO,
+	DEVICE_TYPE_LITE
+};
+
+enum BOARD_ID
+{
+	BOARD_ID_UNKNOWN = 0,
+	BOARD_ID_CORE,
+	BOARD_ID_LITE
+};
 
 typedef struct
 {
@@ -59,6 +75,10 @@ typedef struct
 	uint8_t was_the_device_reset : 1;
 	uint8_t payload_flashed : 1;
 	uint8_t reserved : 6;
+
+	enum DEVICE_TYPE device_type;
+	enum BOARD_ID board_id;
+	uint32_t fpga_type;
 
 	glitch_cfg_t glitch_cfg;
 
