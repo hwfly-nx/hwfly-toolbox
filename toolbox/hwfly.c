@@ -380,7 +380,8 @@ void hwfly_update_fw()
 	// save version
 	fw_version = current_version;
 
-	gfx_printf("Current FW Ver: %d\nForce update: %d\n\n", current_version, force_update);
+	u32 version_print = current_version < 0x100 ? (current_version << 8) : current_version;
+	gfx_printf("Current FW Ver: %d.%d.%d\nForce update: %d\n\n", version_print >> 16, (version_print >> 8) & 0xFF, version_print & 0xFF, force_update);
 
 	u32 size = 0;
 	uint8_t *firmware = sd_file_read("firmware.bin", &size);
@@ -412,10 +413,11 @@ void hwfly_update_fw()
 			goto out;
 		}
 
+		version_print = new_version < 0x100 ? (new_version << 8) : new_version;
 		if (force_update)
-			gfx_printf("Forced update to version %d.\nPress Power to update or VOL to exit..\n", new_version);
+			gfx_printf("Forced update to version %d.%d.%d.\nPress Power to update or VOL to exit..\n", version_print >> 16, (version_print >> 8) & 0xFF, version_print & 0xFF);
 		else
-			gfx_printf("New version %d found.\nPress Power to update or VOL to exit..\n", new_version);
+			gfx_printf("New version %d.%d.%d found.\nPress Power to update or VOL to exit..\n", version_print >> 16, (version_print >> 8) & 0xFF, version_print & 0xFF);
 
 		msleep(500);
 		uint32_t btn = btn_wait();
